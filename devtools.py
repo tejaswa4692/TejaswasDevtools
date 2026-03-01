@@ -1,5 +1,7 @@
 import shutil
 import cmd
+from PIL import Image
+import pillow_heif
 import os
 from scapy.all import sniff, Raw, Dot11, RadioTap, Dot11Deauth, sendp, IP, TCP, UDP
 
@@ -105,5 +107,31 @@ class Devtools(cmd.Cmd):
         print("Exiting...")
         return True
 
+
+    def do_convertheiftopng(self, arg):
+        """Converts a heif image to png format."""
+        pillow_heif.register_heif_opener()
+
+        folder_name: str = "outputimages"
+        os.makedirs(folder_name, exist_ok=True)
+        files = os.listdir(".")
+        for i in files: 
+            nameoffile = i.lower()
+            if nameoffile.endswith(".heic"):
+
+                print(nameoffile + " is being converted...")
+                
+                input_path = nameoffile
+                output_path = os.path.join(folder_name, nameoffile.replace(".heic", ".png"))
+
+                image = Image.open(input_path)
+                image.save(output_path, "PNG")
+
+                print("Conversion complete.")
+
+
+
 if __name__ == '__main__':
     Devtools().cmdloop()
+
+
